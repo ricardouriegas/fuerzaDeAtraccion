@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Ley de Coulumb</title>
+
+	<style type="text/css">
+
+		body {
+		  display:flex; 
+		  flex-direction:column; 
+		  justify-content:center;
+
+		}
+		.body{
+			width:450em;
+			padding:30px;
+			margin:0px auto;
+			text-align: center;
+			border-radius: 10px;
+			-webkit-border-radius:10px;
+			-moz-border-radius: 10px;
+			box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
+			-moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
+			-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
+		}
+		/*	boton con animacion	*/
+		.glow-on-hover {
+		    width: 220px;
+		    height: 50px;
+		    border: none;
+		    outline: none;
+		    color: #fff;
+		    background: #111;
+		    cursor: pointer;
+		    position: relative;
+		    z-index: 0;
+		    border-radius: 10px;
+		}
+		.glow-on-hover:before {
+		    content: '';
+		    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, 
+		    	#48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+		    position: absolute;
+		    top: -2px;
+		    left:-2px;
+		    background-size: 400%;
+		    z-index: -1;
+		    filter: blur(5px);
+		    width: calc(100% + 4px);
+		    height: calc(100% + 4px);
+		    animation: glowing 20s linear infinite;
+		    opacity: 0;
+		    transition: opacity .3s ease-in-out;
+		    border-radius: 10px;
+		}
+		.glow-on-hover:active {
+		    color: #000
+		}
+		.glow-on-hover:active:after {
+		    background: transparent;
+		}
+		.glow-on-hover:hover:before {
+		    opacity: 1;
+		}
+		.glow-on-hover:after {
+		    z-index: -1;
+		    content: '';
+		    position: absolute;
+		    width: 100%;
+		    height: 100%;
+		    background: #111;
+		    left: 0;
+		    top: 0;
+		    border-radius: 10px;
+		}
+		@keyframes glowing {
+		    0% { background-position: 0 0; }
+		    50% { background-position: 400% 0; }
+		    100% { background-position: 0 0; }
+		}
+		
+		input {
+			text-align: center;
+			margin: 0 auto;
+			box-sizing: border-box;
+			color: white;
+			width: 80%;
+			padding: 18px;
+			border-radius: 12px;
+			border: 0px;
+			box-shadow: 10px 2em 2em -1.5em rgba(0, 0, 0, .5);
+			background: transparent;
+			backdrop-filter:  blur(10px) saturate(150%);
+		}
+
+		select {
+			text-align: center;
+			margin: 0 auto;
+			box-sizing: border-box;
+			background-color: rgb(250, 230, 255, .4);
+			width: 80%;
+			padding: 18px;
+			border-radius: 12px;
+			border: 0px;
+/*			box-shadow: 10px 2em 1em -1.5em rgba(0, 0, 0, .5);*/
+		}
+		select option {
+			background-color: rgb(250, 230, 255);
+			height: 12px;
+		}
+
+
+	</style>
+
+	<script type="text/javascript">
+		function isPositive(x) {
+			if (x > 0) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function sumaORestaDeFuerzas(q1, q2, q3) {
+			if (isPositive(q1) == true && 
+				isPositive(q2) == true && 
+				isPositive(q3) == true) {
+				return false; //resta
+			} else if (isPositive(q1) == true && 
+				isPositive(q2) == false && 
+				isPositive(q3) == true) {
+				return false;
+			} else if (isPositive(q1) == true && 
+				isPositive(q2) == true && 
+				isPositive(q3) == false) {
+				return true; //suma
+			} else if (isPositive(q1) == true && 
+				isPositive(q2) == false && 
+				isPositive(q3) == false) {
+				return true;
+			} else if (isPositive(q1) == false && 
+				isPositive(q2) == true && 
+				isPositive(q3) == true) {
+				return true;
+			} else if (isPositive(q1) == false && 
+				isPositive(q2) == false && 
+				isPositive(q3) == true) {
+				return true;
+			} else if (isPositive(q1) == false && 
+				isPositive(q2) == true && 
+				isPositive(q3) == false) {
+				return false;
+			} else if (isPositive(q1) == false && 
+				isPositive(q2) == false && 
+				isPositive(q3) === false) {
+				return false;
+			}
+		}
+
+		//constantes
+		var k = 9e9; //9*10^9
+		var i = 1;
+
+		/////////////////////////formulas/////////////////////////////
+		//operacion para obtener fuerza
+		function getFuerza(q_1, q_2, r) { return (Math.abs(q_1*q_2*k)/(r**2)); }
+
+		//operacion para obtener una carga
+		function getCarga(q, F, r) { return (F*(r**2))/(k*q); }
+
+		//operacion para obtener distancia
+		function getDistancia(q_1, q_2, F) { 
+			return Math.sqrt(Math.abs(k*q_1*q_2)/F); 
+		}
+
+		function setDistancia() {
+			var F_1 = document.getElementById('fuerzaD').value;
+			var q = [];	
+			// poner el valor de ls cargas en el array "q"
+			for (var j = 0; j < i-1; j++) {
+				q[j] = document.getElementById("carga" + (j+1) + "D").value;
+			}
+
+			if (q.length == 3) {
+				var F_2 = document.getElementById('fuerzaD2').value;
+				
+				var distancia1 = getDistancia(q[0], q[1], F_1);
+				var distancia2 = getDistancia(q[1], q[2], F_2);
+
+				alert("Distancia entre carga 1 y 2: " + 
+					distancia1 + " metros \n"+
+					"Distancia entre carga 2 y 3: " +
+					distancia2 + " metros");
+
+				document.getElementById('resultado').value = 
+					(Math.round(((
+						distancia1 + distancia2
+						)+Number.EPSILON)
+			 				 * 10000) / 10000).toExponential() + " metros";
+			
+			} else {
+				document.getElementById('resultado').value = 
+				(Math.round((getDistancia(q[0], q[1], F_1)+Number.EPSILON)
+							  *10000)/10000).toExponential() + " metros";
+			}
+		}
+
+		function setCarga() {
+			var F = document.getElementById('fuerzaC').value;
+			var q = document.getElementById('cargaC').value;	
+			var r = document.getElementById('distanciaC').value;
+
+			document.getElementById('resultado').value 
+			= getCarga(q, F, r).toExponential();
+		}
+
+		function setFuerza() {
+			var F_1, F_2;
+			var r_1 = document.getElementById('distanciaF').value;
+			var q = [];	
+
+			for (var j = 0; j < i-1; j++) {
+				q[j] = document.getElementById("carga" + (j+1) + "F").value;
+			}
+
+			if (q.length == 3) {
+				var r_2 = document.getElementById('distanciaF2').value;
+				//calcular fuerza 1 y 2
+				F_1 = getFuerza(q[0], q[1], r_1);
+				F_2 = getFuerza(q[1], q[2], r_2);
+
+				if (sumaORestaDeFuerzas(q[0], q[1], q[2])) {
+					document.getElementById('resultado').value = 
+					 (Math.round(((F_1 + F_2)+Number.EPSILON)
+				 				 * 10000) / 10000).toExponential() + " Newtons";
+
+				} else {
+					document.getElementById('resultado').value = 
+					 F_1 - F_2;
+				}
+			} else {
+				document.getElementById('resultado').value =
+				 (Math.round((getFuerza(q[0], q[1], r_1) + Number.EPSILON)
+				 				 * 10000) / 10000).toExponential() + " Newtons";
+			}
+		}
+	</script>
+</head>
+<body style="background: linear-gradient(90deg, rgba(31,0,122,1) 0%, 
+	rgba(62,4,108,1) 10%, rgba(86,7,97,1) 30%, rgba(77,6,101,1) 50%, 
+	rgba(66,5,106,1) 70%, rgba(56,4,111,1) 90%, rgba(31,0,122,1) 100%);">
+	<br>
+	<h1 style="color: white;">Que desea obtener: </h1>
+	
+	<div align="center" class="container">
+		<select id="optionSelect" onchange="getOption()">
+			<option disabled selected>Seleccionar Opcion</option>
+			<option value="1">Distancia</option>
+			<option value="2">Fuerza</option>
+			<option value="3">Carga</option>
+		</select>
+	</div>
+
+	<script type="text/javascript">
+		function getOption() {
+			var e = document.getElementById("optionSelect");
+			var value = e.value;
+			var text = e.options[e.selectedIndex].text;
+
+			switch (text) {
+				case "Distancia": 
+					document.getElementById('distancia').hidden = false;
+					document.getElementById('fuerza').hidden = true;
+					document.getElementById('carga').hidden = true;
+					break;
+				case "Fuerza": 
+					document.getElementById('distancia').hidden = true;
+					document.getElementById('fuerza').hidden = false;
+					document.getElementById('carga').hidden = true;
+					break;
+				case "Carga": 
+					document.getElementById('distancia').hidden = true;
+					document.getElementById('fuerza').hidden = true;
+					document.getElementById('carga').hidden = false;
+					break;
+
+				// default: console.log('hola');
+			}
+		}
+	</script>
+
+	<div align="center" id="carga" hidden>
+		<p align="center">
+			<hr><br>
+			<!-- obtener el numero de cargas -->
+			<input type="number" id="cargaC" 
+			placeholder="Carga"> <br>
+			<br>
+
+			<input type="number" id="fuerzaC" placeholder="Fuerza"><br><br>
+			<input type="number" id="distanciaC" placeholder="Distancia">
+
+			<br><br>
+			<button class="glow-on-hover" type="button" id="botonCarga" 
+			onclick="setCarga()">Calcular</button>
+		</p>
+	</div>
+
+	<div align="center" id="distancia" hidden>
+		<p align="center">
+			<hr><br>
+			<!-- obtener el numero de cargas -->
+			<input type="number" id="numeroDeCargasD" 
+			placeholder="Numero de Cargas" 
+			onchange="crearInputsDeCargasD()"> <br><br>
+			
+			<!-- div para colocar los inputs del numero de cargas -->
+			<div id="getCargasD"></div><br>
+
+			<!-- Obtener fuerza -->
+			<input type="number" id="fuerzaD" placeholder="Fuerza"><br>
+			<input type="number" id="fuerzaD2" hidden>
+
+			<!-- codigo -->
+			<script type="text/javascript">
+				function crearInputsDeCargasD() {
+
+					var numeroDeCargas = 
+					parseInt(document.getElementById("numeroDeCargasD").value);
+					container = document.getElementById("getCargasD");
+
+					if (numeroDeCargas <= 1 || numeroDeCargas > 3) {
+						alert("numero de cargas no valido");
+					} else {
+						//crear inputs
+						for (i = 1; i <= numeroDeCargas; i++) {
+							//crear input y <br>
+							var input = document.createElement("input");
+							var br = document.createElement("br");
+							//input tipo numero e id
+							input.type = "number";
+							input.id = "carga" + i + "D";
+							//texto parcial con el numero de carga
+							input.placeholder = "Carga " + i;
+							container.appendChild(input);
+							container.appendChild(br);
+						}
+						// desabilitar la casilla de numero 
+						// de cargas para evitar fallos
+						document.getElementById("numeroDeCargasD")
+						 .disabled = true;
+
+						if (numeroDeCargas == 3) {
+							//nueva entrada de distancia
+							document.getElementById('fuerzaD')
+								.placeholder = "Fuerza 1";
+							document.getElementById('fuerzaD2')
+								.hidden = false;
+							document.getElementById('fuerzaD2')
+								.placeholder = "Fuerza 2";
+							alert(
+								"La carga 2 se considera como la de en medio");
+						} 
+					}
+
+				}
+
+			</script>
+			<br><br>
+			<button class="glow-on-hover" type="button" id="botonDistancia" 
+			onclick="setDistancia()">Calcular</button>
+		</p>
+	</div>
+
+	<div align="center" id="fuerza" hidden>
+		<p align="center">
+			<hr><br>
+			<!-- obtener el numero de cargas -->
+			<input type="number" id="numeroDeCargasF" 
+			placeholder="Numero de Cargas" 
+			onchange="crearInputsDeCargasF()"> <br><br>
+
+			<!-- div para colocar los inputs del numero de cargas -->
+			<div id="getCargasF"></div><br>
+
+			<input type="number" id="distanciaF" placeholder="Distancia"><br>
+			<input type="number" id="distanciaF2" hidden>
+			<script type="text/javascript">
+
+				function crearInputsDeCargasF() {
+
+					var numeroDeCargas = 
+					parseInt(document.getElementById("numeroDeCargasF").value);
+					
+					container = document.getElementById("getCargasF");
+
+					if (numeroDeCargas <= 1 || numeroDeCargas > 3) {
+						alert("numero de cargas no valido");
+					} else {
+						//crear inputs
+						for (i = 1; i <= numeroDeCargas; i++) {
+							//crear input y <br>
+							var input = document.createElement("input");
+							var br = document.createElement("br");
+							//input tipo numero e id
+							input.type = "number";
+							input.id = "carga" + i + "F";
+							//texto parcial con el numero de carga
+							input.placeholder = "Carga " + i;
+							container.appendChild(input);
+							container.appendChild(br);
+						}
+						document.getElementById("numeroDeCargasF")
+						  .disabled = true;
+
+						if (numeroDeCargas == 3) {
+							//nueva entrada de distancia
+							document.getElementById('distanciaF')
+								.placeholder = "Distancia 1";
+							document.getElementById('distanciaF2')
+								.hidden = false;
+							document.getElementById('distanciaF2')
+								.placeholder = "Distancia 2";
+							alert(
+								"La carga 2 se considera como la de en medio");
+						} 
+					}
+				}	
+			</script>
+			<br><br>
+			<button class="glow-on-hover" type="button" id="botonFuerza" 
+			onclick="setFuerza()">Calcular</button>
+		</p>
+	</div>
+
+	<p align="center">
+		<input style="color: ghostwhite;" type="text" id="resultado" 
+		value="Resultado" disabled>
+		<br><br>
+		<button class="glow-on-hover" type="button" 
+		onclick="window.location.reload();">Reset</button>
+	</p>
+</body>
+</html>
